@@ -54,3 +54,6 @@ docs/_build/
 # Distribution
 *.tar.gz
 *.whl
+
+# Dev-only Claude Code instructions must never be published
+CLAUDE.md
