@@ -8,7 +8,11 @@ sys.path.insert(0, os.path.abspath('../..'))
 project = 'HFortix-FortiCare'
 copyright = '2026, Herman W. Jacobsen'
 author = 'Herman W. Jacobsen'
-release = '0.5.161'
+try:
+    from hfortix_forticare import __version__ as release
+except Exception:
+    release = '0.5.163'
+
 
 # -- General configuration ---------------------------------------------------
 extensions = [

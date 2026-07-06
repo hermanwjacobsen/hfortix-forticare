@@ -64,9 +64,9 @@ List Products
    # List all products
    products = fc.api.products.list.post()
 
-   # Filter by serial number
+   # Filter by serial number (SQL LIKE wildcards: % not *)
    products = fc.api.products.list.post(
-       serial_number="FGT*"
+       serial_number="FGT%"
    )
 
    # Filter by status
@@ -111,8 +111,7 @@ Download License
 .. code-block:: python
 
    license_file = fc.api.licenses.download.post(
-       serial_number="FGVMXXXXXXXXXXXX",
-       license_id=123456
+       serial_number="FGVMXXXXXXXXXXXX"
    )
 
 Manage Folders
@@ -154,17 +153,33 @@ Rate Limit Tracking
 Error Handling
 --------------
 
+API-level errors are reported in the response body (``.status != 0``).
+Responses are not subscriptable — use attribute access. HTTP and network
+failures raise ``httpx`` exceptions; the opt-in rate limiter and circuit
+breaker raise ``hfortix_core.exceptions`` types:
+
 .. code-block:: python
 
    import httpx
 
+   from hfortix_core.exceptions import (
+       CircuitBreakerOpenError,
+       RateLimitExceededError,
+   )
+
    try:
-       result = fc.api.products.list.post(serial_number="FGT*")
-       
-       if result['status'] == 0:
+       result = fc.api.products.list.post(serial_number="FGT%")
+
+       if result.status == 0:
            print("Success!")
        else:
-           print(f"API Error: {result['message']}")
-           
+           print(f"API Error: {result.message}")
+
    except httpx.HTTPStatusError as e:
        print(f"HTTP Error: {e.response.status_code}")
+   except httpx.RequestError as e:
+       print(f"Network error: {e}")
+   except CircuitBreakerOpenError:
+       print("Circuit breaker is open")  # only with circuit_breaker=True
+   except RateLimitExceededError:
+       print("Rate limited")  # only with rate_limit=True, strategy="raise"
