@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hfortix-forticare"
+version = "0.5.163"
+description = "FortiCare Asset Management API Client"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "Proprietary"}
+authors = [
+    {name = "Herman W. Jacobsen", email = "herman@wjacobsen.fo"}
+]
+keywords = ["fortinet", "forticare", "api", "client", "asset-management"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Typing :: Typed",
+]
+dependencies = [
+    "hfortix-core>=0.5.161",
+    "httpx>=0.24.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/hermanwjacobsen/hfortix-forticare"
+Documentation = "https://github.com/hermanwjacobsen/hfortix-forticare#readme"
+Repository = "https://github.com/hermanwjacobsen/hfortix-forticare"
+Issues = "https://github.com/hermanwjacobsen/hfortix-forticare/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["hfortix_forticare*"]
+exclude = ["docs*", "tests*"]
+
+[tool.setuptools.package-data]
+hfortix_forticare = ["py.typed", "*.pyi", "**/*.pyi"]
