@@ -12,7 +12,8 @@ Example:
     >>> fcc = FortiCare(oauth_token="your_oauth_token")
     >>> 
     >>> # List products - returns FortiCareResponse object
-    >>> response = fcc.api.products.list.post(serial_number="FGT*")
+    >>> # (serial_number uses SQL LIKE wildcards: % not *)
+    >>> response = fcc.api.products.list.post(serial_number="FGT%")
     >>> 
     >>> # Access response as attributes
     >>> print(response.status)  # 0 for success
@@ -28,7 +29,8 @@ Example:
     >>> # Clean up
     >>> fcc.logout()
 
-For more examples, see EXAMPLES.md
+For more examples, see the README at
+https://github.com/hermanwjacobsen/hfortix-forticare
 """
 
 from __future__ import annotations
@@ -85,7 +87,7 @@ class FortiCare:
         ...     password="your_password",
         ...     client_id="assetmanagement"
         ... )
-        >>> products = fcc.api.products.list.post(serial_number="FGT*")
+        >>> products = fcc.api.products.list.post(serial_number="FGT%")
         >>> fcc.logout()
         >>> 
         >>> # Or with pre-obtained token
@@ -158,10 +160,29 @@ class FortiCare:
             audit_handler: Handler for audit logging (implements AuditHandler protocol)
             audit_callback: Custom callback function for audit logging
             user_context: Optional dict with user/application context to include in audit logs
-            rate_limit_calls_per_minute: Maximum calls per minute (default: 100, None = no limit)
-            rate_limit_calls_per_hour: Maximum calls per hour (default: 1000, None = no limit)
-            rate_limit_errors_per_hour: Maximum errors per hour (default: 10, None = no limit)
-        
+            rate_limit_calls_per_min: Tracking-only limit for calls per minute (default: None = no limit)
+            rate_limit_calls_per_5min: Tracking-only limit for calls per 5 minutes (default: None = no limit)
+            rate_limit_calls_per_hour: Tracking-only limit for calls per hour (default: None = no limit)
+            rate_limit_errors_per_min: Tracking-only limit for errors per minute (default: None = no limit)
+            rate_limit_errors_per_5min: Tracking-only limit for errors per 5 minutes (default: None = no limit)
+            rate_limit_errors_per_hour: Tracking-only limit for errors per hour (default: None = no limit)
+            rate_limit: Enable client-side rate limit enforcement (default: False)
+            rate_limit_strategy: Enforcement strategy - "queue", "drop", or "raise" (default: "queue")
+            rate_limit_max_requests: Max requests per window when enforcing (default: 100)
+            rate_limit_window_seconds: Enforcement window in seconds (default: 60.0)
+            rate_limit_queue_size: Max queued requests with "queue" strategy (default: 100)
+            rate_limit_queue_timeout: Max seconds a request waits in queue (default: 30.0)
+            rate_limit_queue_overflow: Queue overflow behavior - "block", "drop", or "raise" (default: "block")
+            circuit_breaker: Enable circuit breaker (default: False)
+            circuit_breaker_threshold: Consecutive failures before opening (default: 5)
+            circuit_breaker_timeout: Seconds before transitioning to half-open (default: 60.0)
+            circuit_breaker_half_open_calls: Test calls allowed in half-open state (default: 3)
+
+        Note:
+            The rate_limit_calls_per_*/rate_limit_errors_per_* parameters feed
+            get_rate_limit_status() and are informational only — they never
+            block requests. Use rate_limit=True for actual enforcement.
+
         Raises:
             ValueError: If no authentication method provided
         
@@ -431,7 +452,7 @@ class FortiCare:
             
         Example:
             >>> fcc = FortiCare(oauth_token="...", track_operations=True)
-            >>> fcc.products.list(serial_number="FGT*")
+            >>> fcc.api.products.list.post(serial_number="FGT%")
             >>> ops = fcc.get_operations()
             >>> print(f"Made {len(ops)} API calls")
         """
@@ -450,7 +471,7 @@ class FortiCare:
             
         Example:
             >>> fcc = FortiCare(oauth_token="...", track_operations=True)
-            >>> fcc.products.register(serial_number="FGT123", ...)
+            >>> fcc.api.products.register.post(registration_units=[...])
             >>> write_ops = fcc.get_write_operations()
             >>> print(f"Made {len(write_ops)} write operations")
         """
@@ -486,11 +507,12 @@ class FortiCare:
         Useful for debugging and understanding what was sent/received.
         
         Returns:
-            Dictionary with last request details or None if no requests made
-            
+            Dictionary with last request details. If no requests have been
+            made yet, returns a dictionary with an "error" key.
+
         Example:
             >>> fcc = FortiCare(oauth_token="...")
-            >>> fcc.products.list()
+            >>> fcc.api.products.list.post()
             >>> last = fcc.inspect_last_request()
             >>> print(f"Last request took {last['response_time']}s")
         """

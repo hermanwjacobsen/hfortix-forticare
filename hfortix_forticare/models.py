@@ -394,6 +394,7 @@ __all__ = [
     "Contract",
     "Product",
     "Folder",
+    "AssetDetail",
 ]
 
 
@@ -423,5 +424,10 @@ class Product(FortiCareObject):
 
 class Folder(FortiCareObject):
     """Typed wrapper for Folder objects."""
+    pass
+
+
+class AssetDetail(FortiCareObject):
+    """Typed wrapper for AssetDetails objects."""
     pass
 

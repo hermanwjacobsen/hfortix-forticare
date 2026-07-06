@@ -7,6 +7,7 @@ Python SDK for Fortinet FortiCare Asset Management V3 API.
 from __future__ import annotations
 
 from typing import Any, Optional
+from hfortix_core.http.oauth import FortiCloudAuth, get_oauth_token
 from hfortix_core.session import CloudSession
 from .api.v3 import V3API
 from .models import FortiCareResponse, FortiCareObject, FortiCareList, Product
@@ -47,6 +48,17 @@ class FortiCare:
         rate_limit_errors_per_min: Optional[int] = None,
         rate_limit_errors_per_5min: Optional[int] = None,
         rate_limit_errors_per_hour: Optional[int] = None,
+        rate_limit: bool = False,
+        rate_limit_strategy: str = "queue",
+        rate_limit_max_requests: int = 100,
+        rate_limit_window_seconds: float = 60.0,
+        rate_limit_queue_size: int = 100,
+        rate_limit_queue_timeout: float = 30.0,
+        rate_limit_queue_overflow: str = "block",
+        circuit_breaker: bool = False,
+        circuit_breaker_threshold: int = 5,
+        circuit_breaker_timeout: float = 60.0,
+        circuit_breaker_half_open_calls: int = 3,
     ) -> None: ...
     
     def get_rate_limit_status(self) -> dict[str, Any]: ...
@@ -76,5 +88,7 @@ __all__ = [
     "FortiCareObject",
     "FortiCareList",
     "Product",
+    "FortiCloudAuth",
+    "get_oauth_token",
 ]
 
