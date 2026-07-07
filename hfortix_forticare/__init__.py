@@ -47,7 +47,7 @@ from .models import FortiCareResponse, FortiCareObject, FortiCareList, Product
 
 logger = logging.getLogger("hfortix.forticare")
 
-__version__ = "0.5.163"
+__version__ = "0.5.164"
 __all__ = [
     "FortiCare",
     "FortiCareResponse",

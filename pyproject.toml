@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hfortix-forticare"
-version = "0.5.163"
+version = "0.5.164"
 description = "FortiCare Asset Management API Client"
 readme = "README.md"
 requires-python = ">=3.9"
